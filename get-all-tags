@@ -1,0 +1,35 @@
+const fs = require('fs');
+var cloudinary = require('cloudinary');
+
+cloudinary.config({
+    cloud_name: "",
+    api_key: "",
+    api_secret: ""
+});
+
+  function listTags(next_cursor) {
+  	if(next_cursor == 1)
+  	{
+  		res = cloudinary.v2.api.tags(
+  			function(error, result){
+  		more = result.next_cursor;
+  		console.log(more);
+  		fs.appendFile('mynewfile.txt', result.tags + '\n', function (err) {
+            if (err) throw err;
+        });
+  		listTags(more);})
+  	}
+	else if(next_cursor) {
+		console.log("inside" +next_cursor)
+		res = cloudinary.v2.api.tags({next_cursor:next_cursor},
+  			function(error, result){
+  		more = result.next_cursor;
+  		console.log(more,result.tags);
+  		fs.appendFile('mynewfile.txt', result.tags + '\n', function (err) {
+            if (err) throw err;
+        });
+  		listTags(more);})
+	}
+	}
+  
+  listTags(1);
